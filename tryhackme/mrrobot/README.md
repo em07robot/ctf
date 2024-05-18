@@ -16,12 +16,12 @@ Pour déployer une machine et interagir avec, vous devez d'abord vous connecter 
    - Ouvrez un terminal (Linux) ou une fenêtre de commande (Windows). Exécutez la commande suivante pour vous connecter avec votre fichier de configuration :
 
      ```bash
-    	sudo openvpn --config username.ovpn
+     sudo openvpn --config username.ovpn
      ```
      Ou
      
      ```bash
-     	sudo openvpn username.ovpn
+     sudo openvpn username.ovpn
      ```
 
    - Sur Windows, vous pouvez utiliser un client graphique comme [OpenVPN GUI](https://openvpn.net/community-downloads/) et importer votre fichier `.ovpn`.
@@ -121,30 +121,27 @@ Dans cette tâche, nous allons pirater la machine virtuelle Mr. Robot. L'objecti
 
    - On voit que la requête envoyée lors d'une tentative de connexion est `log=admin&pwd=admin&wp-submit=Log+In&redirect_to=http%3A%2F%2F10.10.14.242%2Fwp-admin%2F&testcookie=1`.
 
-   - Nous tentons de nous connecter, mais nous nous rappelons du fichier `fsocity.dic` que nous avons déjà. Nous réfléchissons donc à une attaque par force brute en utilisant `hydra`.
-
-    J'utilise la commande suivante pour bruteforcer le username :
-
-    ```bash
-    	hydra -L fsociety.dic -p test  10.10.14.242 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:login failed"
-    ```
+   - Nous tentons de nous connecter, mais nous nous rappelons du fichier `fsocity.dic` que nous avons déjà. Nous réfléchissons donc à une attaque par force brute en utilisant `hydra`. J'utilise la commande suivante pour bruteforcer le username :
+     ```bash
+      hydra -L fsociety.dic -p test  10.10.14.242 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:login failed"
+     ```
       ![hydra](images/thm_mr_robot_bf_name.png)
 
     Avec `-L` pour spécifier une liste de mots et `-p` pour le mot de passe.
     
    - Nous nous rendons sur la page de connexion par défaut des sites WordPress à l'adresse `/wp-login`.
 
-    ![login](images/thm_mr_robot_login.png)
+    ![login](images/thm_mr_robot_loggin.png)
 	
    - On essaie de verifier  les nom que nous avons eu avec hydra et on voit que le username `elliot` est valide
    
    ![login](images/thm_mr_robot_find_usr.png)
 
    - Ensuite, j'utilise la commande suivante pour trouver le mot de passe :
-
-    ```bash
+     ```bash
     	hydra -l "elliot" -P fsociety.dic 10.10.14.242 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:Incorrect"
-    ```
+     ```
+     
     ![hydra](images/thm_mr_robot_find_pass.png)
     
    - Une fois connecté on essaie d'obtenir un reverse shell on se rend sur le site [reverse shell](https://www.revshells.com). On entre notre ip et un port 
@@ -172,11 +169,11 @@ Dans cette tâche, nous allons pirater la machine virtuelle Mr. Robot. L'objecti
    
 7. **Recherche de la troisieme clé :**
 
-   - En general la derniere partie est toujours une escalation de privilege. Donc on sait que la troisieme cle se trouve dans le repot root oubien dans un fichier que seul root est capable de lire d'ou on doit rooter la machine
-   - La premiere des choses qui me vient a l'esprit c'est de chercher avec quel command mon user actuel est capable d'executer avec des privilege. J'utilise la commande `sudo -l` mais la sortie nous dit que le user robot n'est pas sudoers donc je cherche d'autres moyen. Et la deuxieme methode c'est de trouver des executables avec le bit suid qui nous permet d'executer  avec les priviliges du proprietaire avec la commande `find / -type f -perm -4000 -exec ls -l {} \; 2>/dev/null`.
+   - En general la derniere partie est toujours une escalation de privilege. Donc on sait que la troisieme cle se trouve dans le repot root oubien dans un fichier que seul root est capable de lire donc on doit rooter la machine
+   - La premiere des choses qui me vient a l'esprit c'est de chercher avec quel command mon user actuel est capable d'executer avec des privilege. J'utilise la commande `sudo -l` mais la sortie nous dit que le user robot n'est pas un sudoers donc je cherche d'autres moyen. Et la deuxieme methode c'est de trouver des executables avec le bit suid qui nous permet d'executer  avec les priviliges du proprietaire avec la commande `find / -type f -perm -4000 -exec ls -l {} \; 2>/dev/null`.
    
    ![peas](images/thm_mr_robot_peas.png)
    
    -On voit beaucoup d'executable du coup on utilise le site [gtfobins](https://gtfobins.github.io/) pour voir comment avoir les privilege root avec l'une des executables. Et on trouve un moyen d'obtenir les privileges avec l'excutable nmap en utilisant la commande `nmap --interactive` ensuite on entre `!sh`
    
-   ![root](images/thm_robot_root.png)
+   ![root](images/thm_mr_robot_root.png)
