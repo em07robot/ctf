@@ -113,11 +113,11 @@ Dans cette tâche, nous allons pirater la machine virtuelle Mr. Robot. L'objecti
 
    - En décodant, on trouve le credential.
 
-    ![cred](images/thm_mr_robot_cred.png)
+  ![cred](images/thm_mr_robot_cred.png)
     
    - Nous pouvons aussi utiliser une autre méthode en utilisant hydra pour forcer brutalement le login. On essaie de se connecter sur la page et de capturer la requête envoyée en utilisant Burp Suite.
 
-    ![burpsuite](images/thm_mr_robot_burp.png)
+  ![burpsuite](images/thm_mr_robot_burp.png)
 
    - On voit que la requête envoyée lors d'une tentative de connexion est `log=admin&pwd=admin&wp-submit=Log+In&redirect_to=http%3A%2F%2F10.10.14.242%2Fwp-admin%2F&testcookie=1`.
 
@@ -125,13 +125,13 @@ Dans cette tâche, nous allons pirater la machine virtuelle Mr. Robot. L'objecti
      ```bash
       hydra -L fsociety.dic -p test  10.10.14.242 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:login failed"
      ```
-      ![hydra](images/thm_mr_robot_bf_name.png)
+   ![hydra](images/thm_mr_robot_bf_name.png)
 
     Avec `-L` pour spécifier une liste de mots et `-p` pour le mot de passe.
     
    - Nous nous rendons sur la page de connexion par défaut des sites WordPress à l'adresse `/wp-login`.
 
-    ![login](images/thm_mr_robot_loggin.png)
+   ![login](images/thm_mr_robot_loggin.png)
 	
    - On essaie de verifier  les nom que nous avons eu avec hydra et on voit que le username `elliot` est valide
    
@@ -142,12 +142,12 @@ Dans cette tâche, nous allons pirater la machine virtuelle Mr. Robot. L'objecti
     	hydra -l "elliot" -P fsociety.dic 10.10.14.242 http-post-form "/wp-login.php:log=^USER^&pwd=^PASS^:Incorrect"
      ```
      
-    ![hydra](images/thm_mr_robot_find_pass.png)
+   ![hydra](images/thm_mr_robot_find_pass.png)
     
    - Une fois connecté on essaie d'obtenir un reverse shell on se rend sur le site [reverse shell](https://www.revshells.com). On entre notre ip et un port 
    - NB: c'est l'ip de l'interface de notre vpn qu'il faut entrez
     
-    ![reverse shell](images/thm_mr_robot_rv_shell.png)
+   ![reverse shell](images/thm_mr_robot_rv_shell.png)
     
    - Sur le site dans l'onglet `Appearance` on modifie un fichier php (ici le fichier 404.php) et on colle notre code malveillant pour obtenir le reverse shell
    
@@ -177,3 +177,5 @@ Dans cette tâche, nous allons pirater la machine virtuelle Mr. Robot. L'objecti
    -On voit beaucoup d'executable du coup on utilise le site [gtfobins](https://gtfobins.github.io/) pour voir comment avoir les privilege root avec l'une des executables. Et on trouve un moyen d'obtenir les privileges avec l'excutable nmap en utilisant la commande `nmap --interactive` ensuite on entre `!sh`
    
    ![root](images/thm_mr_robot_root.png)
+   
+   - mr robot rooted !!
