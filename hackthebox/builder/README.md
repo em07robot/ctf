@@ -35,7 +35,7 @@ Finalement, j'ai obtenu le hash de l'utilisateur `jennifer`.
 
 J'ai utilisé John The Ripper pour cracker le mot de passe
 
-![](images/user_pass_crack.png)
+![](images/user_pass_cracked.png)
 
 ### Connexion au serveur Jenkins
 
